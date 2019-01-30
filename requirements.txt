@@ -12,3 +12,4 @@ celery
 psycopg2-binary
 SQLAlchemy-Utils
 rajaongkir
+gunicorn
