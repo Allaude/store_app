@@ -8,3 +8,9 @@ class Item(db.Model):
     weight = db.Column(db.Float)
     user_id = db.Column(db.Integer, db.ForeignKey('user_v2.id'), nullable=False)
     user = db.relationship('User', lazy='joined')
+
+    def __init__(self, **kwargs):
+        super(Item, self).__init__(**kwargs)
+
+    def __repr__(self):
+        return "<Item %s>" % self.item
