@@ -1,7 +1,7 @@
 import json
 import pytest
 
-from mystore.models import User
+from mystore.models import User, Item
 from mystore.app import create_app
 from mystore.extensions import db as _db
 
@@ -23,6 +23,21 @@ def db(app):
 
     _db.session.close()
     _db.drop_all()
+
+
+@pytest.fixture
+def test_item(db):
+    item = Item(
+        item='tes',
+        price=30.00,
+        weight=3000.00,
+        user_id=1
+    )
+
+    db.session.add(item)
+    db.session.commit()
+
+    return item
 
 
 @pytest.fixture

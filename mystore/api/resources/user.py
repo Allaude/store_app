@@ -21,12 +21,14 @@ class UserResource(Resource):
     """
     method_decorators = [jwt_required]
 
-    def get(self, user_id):
+    @staticmethod
+    def get(user_id):
         schema = UserSchema()
         user = User.query.get_or_404(user_id)
         return {"user": schema.dump(user).data}
 
-    def put(self, user_id):
+    @staticmethod
+    def put(user_id):
         schema = UserSchema(partial=True)
         user = User.query.get_or_404(user_id)
         user, errors = schema.load(request.json, instance=user)
@@ -35,7 +37,8 @@ class UserResource(Resource):
 
         return {"msg": "user updated", "user": schema.dump(user).data}
 
-    def delete(self, user_id):
+    @staticmethod
+    def delete(user_id):
         user = User.query.get_or_404(user_id)
         db.session.delete(user)
         db.session.commit()
@@ -48,12 +51,14 @@ class UserList(Resource):
     """
     method_decorators = [jwt_required]
 
-    def get(self):
+    @staticmethod
+    def get():
         schema = UserSchema(many=True)
         query = User.query
         return paginate(query, schema)
 
-    def post(self):
+    @staticmethod
+    def post():
         schema = UserSchema()
         user, errors = schema.load(request.json)
         if errors:

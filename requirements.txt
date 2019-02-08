@@ -8,6 +8,7 @@ marshmallow-sqlalchemy
 python-dotenv
 passlib
 tox
+requests
 celery
 psycopg2-binary
 SQLAlchemy-Utils

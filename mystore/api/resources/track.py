@@ -1,9 +1,14 @@
 from flask import request
 import requests
 from flask_restful import Resource
+from mystore.models import Item
+import math
 
 
-class APIParent():
+class APIParent:
+    def __init__(self):
+        pass
+
     type = "starter"
     key = "182561962cf94cd52a5a013a6cc058fa"
     url = 'https://api.rajaongkir.com/' + type + '/'
@@ -12,12 +17,14 @@ class APIParent():
 
 
 class Hello(Resource):
-    def get(self):
+    @staticmethod
+    def get():
         return {"msg": "Welcome to Store App"}
 
 
 class Province(Resource):
-    def get(self):
+    @staticmethod
+    def get():
         api = APIParent()
         url = api.url + 'province'
         try:
@@ -27,8 +34,21 @@ class Province(Resource):
             return e
 
 
+class ProvinceById(Resource):
+    @staticmethod
+    def get(province_id):
+        api = APIParent()
+        url = api.url + 'province?id=' + province_id
+        try:
+            r = requests.get(url, headers=api.headers)
+            return r.json()
+        except requests.exceptions.RequestException as e:
+            return e
+
+
 class City(Resource):
-    def get(self):
+    @staticmethod
+    def get():
         api = APIParent()
         url = api.url + 'city'
         try:
@@ -39,7 +59,8 @@ class City(Resource):
 
 
 class CityById(Resource):
-    def get(self, city_id):
+    @staticmethod
+    def get(city_id):
         api = APIParent()
         url = api.url + 'city?id=' + city_id
         try:
@@ -50,7 +71,8 @@ class CityById(Resource):
 
 
 class CityByProvince(Resource):
-    def get(self, province_id):
+    @staticmethod
+    def get(province_id):
         api = APIParent()
         url = api.url + 'city?province=' + province_id
         try:
@@ -61,19 +83,26 @@ class CityByProvince(Resource):
 
 
 class Cost(Resource):
-    def post(self):
+    @staticmethod
+    def post():
         data = request.json
         api = APIParent()
         url = api.url + 'cost'
-        payload = "origin="+data['city_from']+"&destination="+data['city_from']+"&weight="+data['city_from']+"&courier="+data['courier']
+        item_id = int(data['item_id'])
+        item = Item.query.get_or_404(item_id)
+        weight = str(math.ceil(item.weight))
+        payload = "origin="+data['city_from']+"&destination="+data['city_from']+"&weight="+weight+"&courier="\
+                  + data['courier']
         try:
-            r = requests.post(url,  data=payload, headers={'content-type': 'application/x-www-form-urlencoded', 'key': api.key})
+            r = requests.post(url,  data=payload, headers={'content-type': 'application/x-www-form-urlencoded',
+                                                           'key': api.key})
             return r.json()
         except requests.exceptions.RequestException as e:
             return e
 
 
 class Courier(Resource):
-    def get(self):
+    @staticmethod
+    def get():
         data = {"courier1": "pos", "courier2": "tiki", "courier3": "jne"}
         return data

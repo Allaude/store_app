@@ -18,12 +18,14 @@ class ItemResource(Resource):
 
     method_decorators = [jwt_required]
 
-    def get(self, item_id):
+    @staticmethod
+    def get(item_id):
         schema = ItemSchema()
         item = Item.query.get_or_404(item_id)
         return {"item": schema.dump(item).data}
 
-    def put(self, item_id):
+    @staticmethod
+    def put(item_id):
         schema = ItemSchema(partial=True)
         item = Item.query.get_or_404(item_id)
         item, errors = schema.load(request.json, instance=item)
@@ -32,7 +34,8 @@ class ItemResource(Resource):
 
         return {"msg": "item was updated ", "item": schema.dump(item).data}
 
-    def delete(self, item_id):
+    @staticmethod
+    def delete(item_id):
         user = Item.query.get_or_404(item_id)
         db.session.delete(user)
         db.session.commit()
@@ -43,19 +46,22 @@ class ItemList(Resource):
 
     method_decorators = [jwt_required]
 
-    def get(self):
+    @staticmethod
+    def get():
         schema = ItemSchema(many=True)
         query = Item.query
         return paginate(query, schema)
 
-    def post(self):
+    @staticmethod
+    def post():
         schema = ItemSchema()
         item, errors = schema.load(request.json)
-        item.user_id = get_jwt_identity()
 
         if errors:
             return errors, 422
 
+        user_id = get_jwt_identity()
+        item.user_id = user_id
         db.session.add(item)
         db.session.commit()
 
